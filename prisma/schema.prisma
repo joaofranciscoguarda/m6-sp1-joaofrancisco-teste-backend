@@ -11,23 +11,26 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  fullName String @unique
-
-  hash String 
-  email String @unique
-
-  cellphone String @unique 
-  createdAt DateTime @default(now())
-
-  contacts Contact[]
+  id        Int       @id @default(autoincrement())
+  fullName  String
+  hash      String
+  email     String    @unique
+  cellphone String    @unique
+  createdAt DateTime  @default(now())
+  contacts  Contact[]
+  role      Role      @default(USER)
 }
 
 model Contact {
-  id Int @id @default(autoincrement())
-  fullName String @unique
-  email String @unique
-  cellphone String @unique
-  ownerId Int
-  owner User @relation(fields: [ownerId], references: [id])
+  id        Int    @id @default(autoincrement())
+  fullName  String 
+  email     String 
+  cellphone String 
+  ownerId   Int
+  owner     User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  USER
+  ADMIN
 }
