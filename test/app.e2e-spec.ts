@@ -3,18 +3,18 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { PrismaService } from '../src/prisma/prisma.service';
-import { AppModule } from '../src/app.module';
 import * as pactum from 'pactum';
+import { AppModule } from '../src/app.module';
 import {
   CreateUserDto,
   LoginUserDto,
 } from '../src/auth/dto';
-import { EditUserDto } from '../src/user/dto';
 import {
   CreateContactDto,
   EditContactDto,
 } from '../src/contact/dto';
+import { PrismaService } from '../src/prisma/prisma.service';
+import { EditUserDto } from '../src/user/dto';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;

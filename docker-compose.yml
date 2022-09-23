@@ -5,22 +5,16 @@ services:
     image: postgres:13
     ports:
       - 5434:5432
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1234
-      POSTGRES_DB: nest
+      
     networks:
       - teste_tecnico_sp1
   test-db:
     image: postgres:13
     ports:
       - 5435:5432
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1234
-      POSTGRES_DB: nest
+    env_file:
+      - .env
     networks:
       - teste_tecnico_sp1
 networks:
   teste_tecnico_sp1:
-    
