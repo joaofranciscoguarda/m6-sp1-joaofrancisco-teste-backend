@@ -19,6 +19,8 @@ model User {
   createdAt DateTime  @default(now())
   contacts  Contact[]
   role      Role      @default(USER)
+
+  @@map("users")
 }
 
 model Contact {
@@ -28,6 +30,8 @@ model Contact {
   cellphone String 
   ownerId   Int
   owner     User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@map("contacts")
 }
 
 enum Role {
