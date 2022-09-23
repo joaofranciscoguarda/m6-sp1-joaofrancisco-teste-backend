@@ -1,11 +1,7 @@
 import {
-  Delete,
   ForbiddenException,
-  HttpCode,
-  HttpStatus,
   Injectable,
 } from '@nestjs/common';
-import { Contact } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   CreateContactDto,

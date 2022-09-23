@@ -6,8 +6,8 @@ import {
   Body,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { GetUser } from '../../src/auth/decorator/get-user.decorator';
-import { JwtGuard } from '../../src/auth/guard';
+import { GetUser } from '../auth/decorator';
+import { JwtGuard } from '../auth/guard';
 import { EditUserDto } from './dto';
 import { UserService } from './user.service';
 
