@@ -3,18 +3,18 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { PrismaService } from '../src/prisma/prisma.service';
-import { AppModule } from '../src/app.module';
 import * as pactum from 'pactum';
+import { AppModule } from '../src/app.module';
 import {
   CreateUserDto,
   LoginUserDto,
 } from '../src/auth/dto';
-import { EditUserDto } from '../src/user/dto';
 import {
   CreateContactDto,
   EditContactDto,
 } from '../src/contact/dto';
+import { PrismaService } from '../src/prisma/prisma.service';
+import { EditUserDto } from '../src/user/dto';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -49,14 +49,24 @@ describe('AppController (e2e)', () => {
   describe('Auth', () => {
     const dto: CreateUserDto = {
       fullName: 'joao francisco',
-      email: 'asada@asdaasd.com',
+      email: 'email@contato.com',
       cellphone: '123451',
       password: '1234',
     };
+    const dto2: CreateUserDto = {
+      fullName: 'joao francisco',
+      email: 'random@asdaasd.com',
+      cellphone: '1234511',
+      password: '12345',
+    };
 
     const dtoLogin: LoginUserDto = {
-      email: 'asada@asdaasd.com',
+      email: 'email@contato.com',
       password: '1234',
+    };
+    const dto2Login: LoginUserDto = {
+      email: 'random@asdaasd.com',
+      password: '12345',
     };
 
     describe('Signup', () => {
@@ -78,6 +88,20 @@ describe('AppController (e2e)', () => {
           .spec()
           .post('/auth/signup/')
           .withBody(dto)
+          .expectStatus(201);
+      });
+      it('Should throw error, user already exists', () => {
+        return pactum
+          .spec()
+          .post('/auth/signup/')
+          .withBody(dto)
+          .expectStatus(403);
+      });
+      it('Should sigup', () => {
+        return pactum
+          .spec()
+          .post('/auth/signup/')
+          .withBody(dto2)
           .expectStatus(201);
       });
     });
@@ -107,7 +131,18 @@ describe('AppController (e2e)', () => {
           .post('/auth/signin/')
           .withBody(dtoLogin)
           .expectStatus(200)
-          .stores('userToken', 'token')
+          .stores('userToken1', 'token')
+          .stores('userId1', 'userId')
+          .expectBodyContains('token')
+          .expectBodyContains('userId');
+      });
+      it('should login', () => {
+        return pactum
+          .spec()
+          .post('/auth/signin/')
+          .withBody(dto2Login)
+          .expectStatus(200)
+          .stores('userToken2', 'token')
           .expectBodyContains('token');
       });
     });
@@ -119,7 +154,8 @@ describe('AppController (e2e)', () => {
           .spec()
           .get('/user/')
           .withHeaders({
-            Authorization: 'Bearer $S{userToken}',
+            Authorization:
+              'Bearer $S{userToken1}',
           })
           .expectStatus(200);
       });
@@ -130,16 +166,39 @@ describe('AppController (e2e)', () => {
         fullName: 'nome editado',
       };
 
-      it('Should edit user', () => {
+      it('Should EDIT user', () => {
         return pactum
           .spec()
-          .patch('/user/')
+          .patch('/user/$S{userId1}')
           .withHeaders({
-            Authorization: 'Bearer $S{userToken}',
+            Authorization:
+              'Bearer $S{userToken1}',
           })
           .withBody(dto)
           .expectStatus(200)
-          .expectBodyContains(dto.fullName);
+          .expectBodyContains('fullName');
+      });
+      it('Should NOT EDIT profile from other user', () => {
+        return pactum
+          .spec()
+          .patch('/user/$S{userId1}')
+          .withHeaders({
+            Authorization:
+              'Bearer $S{userToken2}',
+          })
+          .withBody(dto)
+          .expectStatus(403);
+      });
+      it('Should NOT EDIT profile not found', () => {
+        return pactum
+          .spec()
+          .patch('/user/1235123')
+          .withHeaders({
+            Authorization:
+              'Bearer $S{userToken1}',
+          })
+          .withBody(dto)
+          .expectStatus(404);
       });
     });
   });
@@ -156,18 +215,20 @@ describe('AppController (e2e)', () => {
           .spec()
           .post('/contact/')
           .withHeaders({
-            Authorization: 'Bearer $S{userToken}',
+            Authorization:
+              'Bearer $S{userToken1}',
           })
           .withBody(dto)
           .expectStatus(201)
-          .stores('contactId', 'id');
+          .stores('contactId1', 'id');
       });
       it('Should NOT create contact, email invalid', () => {
         return pactum
           .spec()
           .post('/contact/')
           .withHeaders({
-            Authorization: 'Bearer $S{userToken}',
+            Authorization:
+              'Bearer $S{userToken1}',
           })
           .withBody({
             ...dto,
@@ -182,7 +243,8 @@ describe('AppController (e2e)', () => {
           .spec()
           .get('/contact/')
           .withHeaders({
-            Authorization: 'Bearer $S{userToken}',
+            Authorization:
+              'Bearer $S{userToken1}',
           })
           .expectStatus(200)
           .expectJsonLength(1);
@@ -192,9 +254,10 @@ describe('AppController (e2e)', () => {
       it('Should GET contacts of user', () => {
         return pactum
           .spec()
-          .get('/contact/$S{contactId}')
+          .get('/contact/$S{contactId1}')
           .withHeaders({
-            Authorization: 'Bearer $S{userToken}',
+            Authorization:
+              'Bearer $S{userToken1}',
           })
           .expectStatus(200)
           .expectBodyContains('ownerId');
@@ -208,25 +271,56 @@ describe('AppController (e2e)', () => {
       it('Should UPDATE contacts of user', () => {
         return pactum
           .spec()
-          .patch('/contact/$S{contactId}')
+          .patch('/contact/$S{contactId1}')
           .withHeaders({
-            Authorization: 'Bearer $S{userToken}',
+            Authorization:
+              'Bearer $S{userToken1}',
           })
           .withBody(editDto)
           .expectStatus(200);
       });
-    });
-    describe('Delete Contact by id', () => {
-      it('Should DELETE contacts of user', () => {
-        console.log('$S{contactId}');
-
+      it('Should NOT UPDATE contacts from other user', () => {
         return pactum
           .spec()
-          .delete('/contact/$S{contactId}')
+          .patch('/contact/$S{contactId1}')
           .withHeaders({
-            Authorization: 'Bearer $S{userToken}',
+            Authorization:
+              'Bearer $S{userToken2}',
+          })
+          .withBody(editDto)
+          .expectStatus(403);
+      });
+    });
+    it('Should NOT DELETE contacts from other user', () => {
+      return pactum
+        .spec()
+        .delete('/contact/$S{contactId1}')
+        .withHeaders({
+          Authorization: 'Bearer $S{userToken2}',
+        })
+        .expectStatus(403)
+        .inspect();
+    });
+    describe('DELETE Contact by id', () => {
+      it('Should DELETE contacts of user', () => {
+        return pactum
+          .spec()
+          .delete('/contact/$S{contactId1}')
+          .withHeaders({
+            Authorization:
+              'Bearer $S{userToken1}',
           })
           .expectStatus(204);
+      });
+      it('Should NOT DELETE contacts that dont exists, or alreadt deleted', () => {
+        return pactum
+          .spec()
+          .delete('/contact/$S{contactId1}')
+          .withHeaders({
+            Authorization:
+              'Bearer $S{userToken1}',
+          })
+          .expectStatus(404);
       });
     });
   });

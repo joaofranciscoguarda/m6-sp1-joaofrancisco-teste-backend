@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EditUserDto } from './dto';
 
@@ -9,18 +13,39 @@ export class UserService {
   async editUser(
     userId: number,
     dto: EditUserDto,
+    paramUserId: number,
   ) {
-    const user = await this.prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        ...dto,
-      },
-    });
+    const findUser =
+      await this.prisma.user.findFirst({
+        where: {
+          id: paramUserId,
+        },
+      });
 
-    delete user.hash;
+    if (!findUser) {
+      throw new NotFoundException(
+        'User not found',
+      );
+    }
 
-    return user;
+    if (userId !== paramUserId) {
+      throw new ForbiddenException(
+        'Access to resources denied',
+      );
+    }
+
+    const updatedUser =
+      await this.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          ...dto,
+        },
+      });
+
+    delete updatedUser.hash;
+
+    return updatedUser;
   }
 }

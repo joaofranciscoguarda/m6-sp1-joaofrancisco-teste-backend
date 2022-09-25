@@ -1,11 +1,8 @@
 import {
-  Delete,
   ForbiddenException,
-  HttpCode,
-  HttpStatus,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
-import { Contact } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   CreateContactDto,
@@ -87,13 +84,17 @@ export class ContactService {
     contactId: number,
   ) {
     const contact =
-      await this.prisma.contact.findUniqueOrThrow(
-        {
-          where: { id: contactId },
-        },
-      );
+      await this.prisma.contact.findFirst({
+        where: { id: contactId },
+      });
+    console.log(ownerId);
+    console.log(contactId);
 
-    if (!contact || contact.ownerId !== ownerId) {
+    if (!contact) {
+      throw new NotFoundException(
+        'Contact not found',
+      );
+    } else if (contact.ownerId !== ownerId) {
       throw new ForbiddenException(
         'Access to resources denied',
       );
