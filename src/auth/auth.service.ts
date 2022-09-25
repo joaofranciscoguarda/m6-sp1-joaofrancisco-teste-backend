@@ -49,7 +49,6 @@ export class AuthService {
           );
         }
       }
-      throw error;
     }
   }
 
@@ -82,7 +81,7 @@ export class AuthService {
     userId: number,
     email: string,
     role: string,
-  ): Promise<{ token: string }> {
+  ): Promise<{ userId: number; token: string }> {
     const payload = {
       sub: userId,
       email,
@@ -97,6 +96,6 @@ export class AuthService {
       },
     );
 
-    return { token: token };
+    return { userId, token: token };
   }
 }

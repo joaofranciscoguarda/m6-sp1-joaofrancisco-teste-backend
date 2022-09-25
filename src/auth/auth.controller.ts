@@ -18,7 +18,6 @@ export class AuthController {
   // @HttpCode(HttpStatus.CREATED) Default pra post é 201
   @Post('signup')
   signup(@Body() dto: CreateUserDto) {
-    console.log({ dto });
     return this.authService.signup(dto);
   }
 

@@ -5,7 +5,8 @@ services:
     image: postgres:13
     ports:
       - 5434:5432
-      
+    env_file:
+      - .env
     networks:
       - teste_tecnico_sp1
   test-db:

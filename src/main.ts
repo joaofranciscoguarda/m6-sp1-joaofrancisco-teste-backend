@@ -8,22 +8,25 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
     }),
   );
   const config = new DocumentBuilder()
-    .setTitle('Cats example')
-    .setDescription('The cats API description')
+    .setTitle('Contact List API')
+    .setDescription(
+      'This is a simple API for users to register their contacts',
+    )
     .setVersion('1.0')
-    .addTag('cats')
+    .addTag('contacts')
     .build();
   const document = SwaggerModule.createDocument(
     app,
     config,
   );
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('docs', app, document);
 
   await app.listen(process.env.PORT || 8000);
 }
