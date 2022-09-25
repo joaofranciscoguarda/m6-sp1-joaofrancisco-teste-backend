@@ -1,2 +1,2 @@
 web: yarn start:prod
-realease: yarn prima migrate deploy
+realease: yarn prisma migrate deploy

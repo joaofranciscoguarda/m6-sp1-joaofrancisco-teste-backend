@@ -17,7 +17,8 @@ async function bootstrap() {
         .addTag('contacts')
         .build();
     const document = swagger_1.SwaggerModule.createDocument(app, config);
-    swagger_1.SwaggerModule.setup('docs', app, document);
+    swagger_1.SwaggerModule.setup('api/docs', app, document);
+    app.setGlobalPrefix('api');
     await app.listen(process.env.PORT || 8000);
 }
 bootstrap();

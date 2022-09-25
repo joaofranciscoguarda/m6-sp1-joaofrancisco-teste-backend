@@ -26,7 +26,7 @@ async function bootstrap() {
     app,
     config,
   );
-  SwaggerModule.setup('docs', app, document);
+  SwaggerModule.setup('api/docs', app, document);
   app.setGlobalPrefix('api');
 
   await app.listen(process.env.PORT || 8000);
