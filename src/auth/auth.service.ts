@@ -60,6 +60,9 @@ export class AuthService {
         where: {
           email: dto.email,
         },
+        include: {
+          contacts: true,
+        },
       });
 
     if (!user) {

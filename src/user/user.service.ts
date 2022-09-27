@@ -42,6 +42,9 @@ export class UserService {
         data: {
           ...dto,
         },
+        include: {
+          contacts: true,
+        },
       });
 
     delete updatedUser.hash;
