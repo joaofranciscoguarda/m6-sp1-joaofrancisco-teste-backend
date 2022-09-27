@@ -45,11 +45,14 @@ let AuthService = class AuthService {
         }
     }
     async signin(dto) {
-        const user = await this.prisma.user.findUniqueOrThrow({
+        const user = await this.prisma.user.findUnique({
             where: {
                 email: dto.email,
             },
         });
+        if (!user) {
+            throw new common_1.ForbiddenException('Credentials incorrect');
+        }
         const pwMatches = await argon.verify(user.hash, dto.password);
         if (!pwMatches) {
             throw new common_1.ForbiddenException('Credentials incorrect');
