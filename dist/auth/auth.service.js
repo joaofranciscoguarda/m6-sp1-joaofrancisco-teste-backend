@@ -33,7 +33,8 @@ let AuthService = class AuthService {
                     hash,
                 },
             });
-            return this.signToken(user.id, user.email, user.role);
+            delete user.hash;
+            return this.signToken(user, user.email, user.role);
         }
         catch (error) {
             if (error instanceof
@@ -57,11 +58,12 @@ let AuthService = class AuthService {
         if (!pwMatches) {
             throw new common_1.ForbiddenException('Credentials incorrect');
         }
-        return this.signToken(user.id, user.email, user.role);
+        delete user.hash;
+        return this.signToken(user, user.email, user.role);
     }
-    async signToken(userId, email, role) {
+    async signToken(user, email, role) {
         const payload = {
-            sub: userId,
+            sub: user,
             email,
             role,
         };
@@ -69,7 +71,7 @@ let AuthService = class AuthService {
             expiresIn: '1d',
             secret: this.config.get('JWT_SECRET'),
         });
-        return { userId, token: token };
+        return { user: user, token: token };
     }
 };
 AuthService = __decorate([

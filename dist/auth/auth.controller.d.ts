@@ -4,11 +4,11 @@ export declare class AuthController {
     private authService;
     constructor(authService: AuthService);
     signup(dto: CreateUserDto): Promise<{
-        userId: number;
+        user: object;
         token: string;
     }>;
     signin(dto: LoginUserDto): Promise<{
-        userId: number;
+        user: object;
         token: string;
     }>;
 }

@@ -33,8 +33,10 @@ export class AuthService {
         },
       });
       // Transformers here
+      delete user.hash;
+
       return this.signToken(
-        user.id,
+        user,
         user.email,
         user.role,
       );
@@ -76,20 +78,23 @@ export class AuthService {
         'Credentials incorrect',
       );
     }
+
+    delete user.hash;
+
     return this.signToken(
-      user.id,
+      user,
       user.email,
       user.role,
     );
   }
 
   async signToken(
-    userId: number,
+    user: object,
     email: string,
     role: string,
-  ): Promise<{ userId: number; token: string }> {
+  ): Promise<{ user: object; token: string }> {
     const payload = {
-      sub: userId,
+      sub: user,
       email,
       role,
     };
@@ -102,6 +107,6 @@ export class AuthService {
       },
     );
 
-    return { userId, token: token };
+    return { user: user, token: token };
   }
 }
