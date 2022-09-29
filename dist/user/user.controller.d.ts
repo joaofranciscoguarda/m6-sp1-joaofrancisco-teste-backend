@@ -7,5 +7,7 @@ export declare class UserController {
     getMe(user: User): {
         user: User;
     };
-    editUser(userId: number, dto: EditUserDto, paramUserId: number): Promise<User>;
+    editUser(userId: number, dto: EditUserDto, paramUserId: number): Promise<User & {
+        contacts: import(".prisma/client").Contact[];
+    }>;
 }

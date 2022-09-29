@@ -50,6 +50,9 @@ let AuthService = class AuthService {
             where: {
                 email: dto.email,
             },
+            include: {
+                contacts: true,
+            },
         });
         if (!user) {
             throw new common_1.ForbiddenException('Credentials incorrect');

@@ -33,6 +33,9 @@ let UserService = class UserService {
                 id: userId,
             },
             data: Object.assign({}, dto),
+            include: {
+                contacts: true,
+            },
         });
         delete updatedUser.hash;
         return updatedUser;
