@@ -2,7 +2,7 @@
 # Contact list
 Contact List is a small project, with the idea to manage a list of contacts, just like the cellphone manager. Made on React + Chakra UI for front-end and NestJs + Prisma + PostgreSQL + Docker for back-end.
 
-Back-end -> https://teste-tecnico-joaof-backend.herokuapp.com/
+Back-end -> https://teste-tecnico-joaof-backend.herokuapp.com/ \
 Front-end -> https://m6-sp1-joaofrancisco-teste-tecnico.vercel.app/
 
 # Run it localy
